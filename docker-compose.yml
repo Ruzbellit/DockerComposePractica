@@ -2,18 +2,17 @@ version: '3'
 
 services: 
   supermarket_db:
-    restart: always
-    image: mysql:5.7
     container_name: supermarket_db
+    restart: always
+    image: postgres
     environment: 
-      MYSQL_ROOT_PASSWORD: 123
-      MYSQL_DATABASE: supermarket_db
-      MYSQL_USER: supermarket
-      MYSQL_PASSWORD: 2021
+      POSTGRES_USER: supermarket
+      POSTGRES_PASSWORD: 2021
+      POSTGRES_DB: supermarket_db
     ports:
-      - 3307:3306
+      - 5432:5432
     volumes:
-      - ./supermarket_db:/var/lib/mysql
+      - ./supermarket_db:/var/lib/postgresql/data
   supermarket_ms:
     restart: always
     container_name: supermarket_ms
@@ -22,7 +21,7 @@ services:
     build: ./supermarket_ms
     environment: 
       DB_HOST: supermarket_db
-      DB_PORT: 3306
+      DB_PORT: 5432
       DB_USER: supermarket
       DB_PASSWORD: 2021
       DB_NAME: supermarket_db
@@ -31,3 +30,14 @@ services:
       - supermarket_db
     links: 
       - supermarket_db
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: tutor@univalle.com
+      PGADMIN_DEFAULT_PASSWORD: albaricoque
+    volumes:
+      - ./supermarket_db:/var/lib/postgresql/data
+    ports:
+      - '5050:80'
